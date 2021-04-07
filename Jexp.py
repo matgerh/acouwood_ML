@@ -6,10 +6,10 @@ from scipy.io import wavfile # get the api
 import numpy as np
 
 df1 = pd.read_csv('data/1_1_n.txt', delimiter = "\t")
-df2 = pd.read_csv('data/1_2_n.txt', delimiter = "\t")
+df2 = pd.read_csv('data/1_7_m.txt', delimiter = "\t")
 
-df3 = pd.read_csv('data/1_3_n.txt', delimiter = "\t")
-df4 = pd.read_csv('data/1_8_m.txt', delimiter = "\t")
+df3 = pd.read_csv('data/1_7_l.txt', delimiter = "\t")
+df4 = pd.read_csv('data/1_7_m.txt', delimiter = "\t")
 
 df5 = pd.read_csv('data/1_9_l.txt', delimiter = "\t")
 df6 = pd.read_csv('data/1_9_m.txt', delimiter = "\t")

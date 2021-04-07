@@ -35,12 +35,16 @@ for filename in os.listdir(dir):
         c = classdict[filename[4:5]]
         filename_path = os.path.join(dir, filename)
         df1 = pd.read_csv(filename_path, delimiter = "\t")
+
+        #if(df1.shape[0]!=1023):
+        #    print(df1.shape[0])
+
         a, b = myfunc(df1)
         data.append([a, b, c]) 
 
 df2 = pd.DataFrame(data, columns=['RMS', 'avg', 'class'])
 
-print(df2)
+
 
 
 #####################################################################################3
