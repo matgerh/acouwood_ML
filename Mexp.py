@@ -4,6 +4,42 @@ import matplotlib.pyplot as plt
 from scipy.fftpack import fft,fftfreq
 from scipy.io import wavfile # get the api
 import numpy as np
+from sklearn.metrics import r2_score
+######################################
+
+#Calculating r2
+df1 = pd.read_csv('data/1_1_n.txt', delimiter = "\t")
+df2 = pd.read_csv('data/2_1_n.txt', delimiter = "\t")
+first = r2_score(df1['Level (dB)'],df2['Level (dB)'])
+
+print(df1.shape[0])
+print(df2.shape[0])
+
+df1 = pd.read_csv('data/1_1_n.txt', delimiter = "\t")
+df2 = pd.read_csv('data/4_1_n.txt', delimiter = "\t")
+second = r2_score(df1['Level (dB)'],df2['Level (dB)'])
+
+print(df1.shape[0])
+print(df2.shape[0])
+
+df1 = pd.read_csv('data/1_1_n.txt', delimiter = "\t")
+df2 = pd.read_csv('data/3_8_m.txt', delimiter = "\t")
+third = r2_score(df1['Level (dB)'],df2['Level (dB)'])
+
+print(df1.shape[0])
+print(df2.shape[0])
+
+print(first)
+print(second)
+print(third)
+exit()
+
+
+
+############################################
+
+
+
 
 df1 = pd.read_csv('data/1_1_n.txt', delimiter = "\t")
 df2 = pd.read_csv('data/1_7_m.txt', delimiter = "\t")
