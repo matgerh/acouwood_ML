@@ -19,20 +19,7 @@ cmap = plt.get_cmap('inferno')
 plt.figure(figsize=(8,8))
 genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
 
-dir = 'data/wav/'
-
 class_list = ["n","l","m","e","d"]
-
-## Extracting the spectograms and saving them as png files 
-# for filename in os.listdir(dir):
-#     if filename.endswith(".wav"):
-#         c = filename[4:5]
-#         filename_path = os.path.join(dir, filename)
-#         y, sr = librosa.load(filename_path, mono=True, duration=5)
-#         plt.specgram(y, NFFT=2048, Fs=2, Fc=0, noverlap=128, cmap=cmap, sides='default', mode='default', scale='dB');
-#         plt.axis('off');
-#         plt.savefig(f'data/wav/img_data/{c}/{filename[:-3].replace(".", "")}.png')
-#         plt.clf()
 
 header = 'filename chroma_stft rmse spectral_centroid spectral_bandwidth rolloff zero_crossing_rate'
 for i in range(1, 21):
@@ -45,11 +32,12 @@ with file:
     writer = csv.writer(file)
     writer.writerow(header)
 
+dir = 'data/wav/'
 for c in class_list:
-    for filename in os.listdir('data/wav/'):
-        if filename.endswith(".wav"):
+    for filename in os.listdir(dir):
+        if filename.endswith(".txt"):
             filename_path = os.path.join(dir, filename)
-            y, sr = librosa.load(filename_path, mono=True, duration=30)
+            y, sr = librosa.load(filename_path, mono=True, duration=40)
             rmse = librosa.feature.rms(y=y)
             chroma_stft = librosa.feature.chroma_stft(y=y, sr=sr)
             spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
@@ -69,12 +57,12 @@ for c in class_list:
 
 data = pd.read_csv('dataset.csv')
 data.head()# Dropping unneccesary columns
-data = data.drop(['filename'],axis=1)#Encoding the Labels
+data = data.drop(['filename'],axis=1) #Encoding the Labels
 class_list = data.iloc[:, -1]
 encoder = LabelEncoder()
-y = encoder.fit_transform(class_list)#Scaling the Feature columns
+y = encoder.fit_transform(class_list) #Scaling the Feature columns
 scaler = StandardScaler()
-X = scaler.fit_transform(np.array(data.iloc[:, :-1], dtype = float))#Dividing data into training and Testing set
+X = scaler.fit_transform(np.array(data.iloc[:, :-1], dtype = float)) #Dividing data into training and Testing set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 

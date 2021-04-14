@@ -1,6 +1,11 @@
 import os
 import pandas as pd
 from math import sqrt
+import mlflow
+
+
+# Set the experiment name
+mlflow.set_experiment("AcouWood")
 
 pd.set_option('display.max_rows', None)
 
@@ -20,31 +25,22 @@ def myfunc(df1):
     #should calculate features and therefore take df as parameter
     outputdB = df1['Level (dB)']
     RMS = qmean(outputdB)
-    
-    df2 = df1['Level (dB)'][df1['Frequency (Hz)'] > 22000]
-    avg = df2.count()
-
-    return RMS, avg
+    return RMS
 
 def qmean(num):
 	return sqrt(sum(n*n for n in num)/len(num))
-
 
 for filename in os.listdir(dir):
     if filename.endswith(".txt"):
         c = classdict[filename[4:5]]
         filename_path = os.path.join(dir, filename)
         df1 = pd.read_csv(filename_path, delimiter = "\t")
+        df2 = [df1['Frequency (Hz)'] > 18000] # Data only above 18 khz
 
-        #if(df1.shape[0]!=1023):
-        #    print(df1.shape[0])
+        a = myfunc(df1)
+        data.append([a, c]) 
 
-        a, b = myfunc(df1)
-        data.append([a, b, c]) 
-
-df2 = pd.DataFrame(data, columns=['RMS', 'avg', 'class'])
-
-
+df2 = pd.DataFrame(data, columns=['RMS', 'class'])
 
 
 #####################################################################################3
@@ -60,7 +56,7 @@ from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 
 
 ## here we can implement different feature scenarios
-feature_names = ["avg"]
+feature_names = ["RMS"]
 class_names = ["class"]
 
 
