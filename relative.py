@@ -61,37 +61,37 @@ fig, axes = plt.subplots()
 x = 'Frequency (Hz)'
 y = 'Level (dB)'
 
-
-a = 'n21 - m1'
-b = 'n41 - m4'
-c = 'n61 - m3'
-d = 'n31 - e5'
-e = 'n51 - e2'
-f = 'n11 - e6'
+a = 'n11 - d14'
+b = 'n41 - d44'
+c = 'n12 - d15'
+d = 'n42 - d45'
+e = 'n13 - d16'
+f = 'n13 - d46'
 
 rel = pd.DataFrame(data, columns=[x, a, b, c, d, e])
 rel[x] = n11[x]
 
-rel[a] = n21[y].subtract(m1[y])
-rel[b] = n41[y].subtract(m4[y])
-rel[c] = n61[y].subtract(m3[y])
-rel[d] = n31[y].subtract(e5[y])
-rel[e] = n51[y].subtract(e2[y])
-rel[f] = n11[y].subtract(e6[y])
-
+rel[a] = n11[y].subtract(d14[y])
+rel[b] = n41[y].subtract(d44[y])
+rel[c] = n12[y].subtract(d15[y])
+rel[d] = n42[y].subtract(d45[y])
+rel[e] = n13[y].subtract(d16[y])
+rel[f] = n43[y].subtract(d46[y])
 
 rel.plot(x, a, ax=axes, color='darkgreen')
-rel.plot(x, b, ax=axes, color='darkgreen')
-rel.plot(x, c, ax=axes, color='darkgreen')
+rel.plot(x, b, ax=axes, color='yellow')
+rel.plot(x, c, ax=axes, color='brown')
 rel.plot(x, d, ax=axes, color='blue')
-rel.plot(x, e, ax=axes, color='blue')
-rel.plot(x, f, ax=axes, color='blue')
+rel.plot(x, e, ax=axes, color='darkgoldenrod')
+rel.plot(x, f, ax=axes, color='darkblue')
 
-axes.set_title("relative")
+axes.set_title("The difference between samples in categories; normal and decay")
 axes.set_xlabel(x)
 axes.set_ylabel(y)
-axes.set_xscale('log')
+axes.set_xlim(0,10000)
+#axes.set_xscale('log')
 # axes.get_legend().remove()
+plt.savefig('diff_plots/diff_n_d_maxfreq10000.png',dpi=300)
 plt.show()
 exit()
 
