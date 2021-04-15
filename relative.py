@@ -6,20 +6,7 @@ import matplotlib.pyplot as plt
 
 pd.set_option('display.max_rows', None)
 
-dir = 'data/'
-
-classdict = {
-  "n": "n",
-  "l": "n",
-  "m": "m",
-  "d": "d",
-  "e": "d"
-}
-
 data = []
-
-
-
 
 #Read in files
 n11 = pd.read_csv('data/1_1_n.txt', delimiter="\t")
@@ -91,7 +78,7 @@ axes.set_ylabel(y)
 axes.set_xlim(0,10000)
 #axes.set_xscale('log')
 # axes.get_legend().remove()
-plt.savefig('diff_plots/diff_n_d_maxfreq10000.png',dpi=300)
+#plt.savefig('diff_plots/diff_n_d_maxfreq10000.png',dpi=300)
 plt.show()
 exit()
 
