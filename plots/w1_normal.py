@@ -1,7 +1,7 @@
 import pandas as pd
 from numpy import mean
 from numpy import std
-from numpy import cov
+from scipy.stats import pearsonr
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,7 +39,15 @@ print('data4: mean=%.3f stdv=%.3f' % (n41[y].mean(), n41[y].std()))
 print('data5: mean=%.3f stdv=%.3f' % (n51[y].mean(), n51[y].std()))
 print('data6: mean=%.3f stdv=%.3f' % (n61[y].mean(), n61[y].std()))
 
-covariance = cov(n11, n21, n31, n41, n51, n61)
-print(covariance)
+corr1, _ = pearsonr(n11[y], n21[y])
+corr2, _ = pearsonr(n11[y], n31[y])
+corr3, _ = pearsonr(n41[y], n51[y])
+corr4, _ = pearsonr(n61[y], n51[y])
+corr5, _ = pearsonr(n41[y], n61[y])
+print('Pearsons correlation: %.3f' % corr1)
+print('Pearsons correlation: %.3f' % corr2)
+print('Pearsons correlation: %.3f' % corr3)
+print('Pearsons correlation: %.3f' % corr4)
+print('Pearsons correlation: %.3f' % corr5)
 
 plt.show()
