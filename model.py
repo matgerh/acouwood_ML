@@ -5,12 +5,8 @@ import mlflow
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-
 import matplotlib.pyplot as plt
 import numpy as np
-
-from sklearn.metrics import r2_score
 
 
 # ML experiment name
@@ -18,7 +14,7 @@ from sklearn.metrics import r2_score
 
 pd.set_option('display.max_rows', None)
 
-dir = 'fft_data/'
+dir = 'data/'
 
 classdict = {
   "n": 0,
@@ -34,30 +30,27 @@ data = []
 
 def above18(df1):
     #should calculate features and therefore take df as parameter
-
-    df_freq = df1['Frequency (Hz)']
-    df_amp = df1['Level (dB)']
-    
-    mean_all = df_amp.mean()
-    RMS_all = qmean(df_amp)
-    mx_all = df_amp.max()
-    mn_all = df_amp.min()
-    return RMS_all, mean_all, mx_all, mn_all
+    df2 = df1['Level (dB)']
+    mean = df2.mean()
+    RMS = qmean(df2)
+    mx = df2.max()
+    mn = df2.min()
+    return RMS, mean, mx, mn
 
 def qmean(num):
     return sqrt(sum(n*n for n in num)/len(num))
 
 for filename in os.listdir(dir):
-    cl = classdict[filename[4:5]]
-    if cl == 2:
-        continue
-    else:
+    if filename.endswith(".txt"):
+        cl = classdict[filename[4:5]]
         filename_path = os.path.join(dir, filename)
         df1 = pd.read_csv(filename_path, delimiter = "\t")
+        df2 = [df1['Frequency (Hz)'] > 18000] # Data only above 18 khz
+
         a, b, c, d = above18(df1)
         data.append([a, b, c, d, cl]) 
 
-df2 = pd.DataFrame(data, columns=['RMS_all', 'mean_all', 'max_all', 'min_all', 'class_all'])
+df2 = pd.DataFrame(data, columns=['RMS', 'mean', 'max', 'min', 'class'])
 
 print(df2)
 exit()
