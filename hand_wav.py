@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 
 pd.set_option('display.max_rows', None)
 
-dir = 'fft_data/'
+dir = 'wav/'
 
 classdict = {
   "n": 0,
