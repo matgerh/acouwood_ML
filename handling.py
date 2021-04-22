@@ -29,6 +29,7 @@ classdict = {
 }
 
 data = []
+classes = []
 
 #with mlflow.start_run(run_name="first_run"): 
 
@@ -37,12 +38,26 @@ def above18(df1):
 
     df_freq = df1['Frequency (Hz)']
     df_amp = df1['Level (dB)']
-    
     mean_all = df_amp.mean()
-    RMS_all = qmean(df_amp)
     mx_all = df_amp.max()
     mn_all = df_amp.min()
-    return RMS_all, mean_all, mx_all, mn_all
+    
+    df_amp_5 = df_amp[df_freq < 5000] # Ampltitude data only below 5 khz
+    df_amp_5_10 = df_amp[(5000 <= df_freq) & (df_freq < 10000)] 
+    df_amp_10_15 = df_amp[(10000 <= df_freq) & (df_freq < 15000)]
+    df_amp_15_20 = df_amp[(15000 <= df_freq) & (df_freq < 20000)]
+    df_amp_20 = df_amp[20000 <= df_freq]
+
+    df_list = [df_amp_5,df_amp_5_10,df_amp_10_15,df_amp_15_20,df_amp_20]
+   
+    features = []
+    for df in df_list:
+        mean = df.mean()
+        mx = df.max()
+        mn = df.min()
+        features.extend((mean,mx,mn))
+    data.append(features)
+    return data
 
 def qmean(num):
     return sqrt(sum(n*n for n in num)/len(num))
@@ -54,13 +69,16 @@ for filename in os.listdir(dir):
     else:
         filename_path = os.path.join(dir, filename)
         df1 = pd.read_csv(filename_path, delimiter = "\t")
-        a, b, c, d = above18(df1)
-        data.append([a, b, c, d, cl]) 
+        data = above18(df1)
+        classes.append(cl)
+        
+columns_= ['mean_5', 'max_5', 'min_5', 'mean_5_10', 'max_5_10', 
+          'min_5_10', 'mean_10_15', 'max_10_15', 'min_10_15', 
+          'mean_15_20', 'max_15_20','min_15_20','mean_20','max_20','min_20']
 
-df2 = pd.DataFrame(data, columns=['RMS_all', 'mean_all', 'max_all', 'min_all', 'class_all'])
-
-print(df2)
-exit()
+df2 = pd.DataFrame(data,columns=columns_)
+df2['class'] = classes # Adding column with class label
+print(df2['class'].value_counts()/len(df2)) # Print the distribution of the data
 
 
 #####################################################################################3
@@ -72,12 +90,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
+from sklearn.decomposition import PCA
 
 
 
 ## here we can implement different feature scenarios
-feature_names = ["RMS", "mean",'max','min']
-class_names = ["class"]
+feature_names = ['mean_5', 'max_5', 'min_5', 'mean_5_10', 'max_5_10', 
+          'min_5_10', 'mean_10_15', 'max_10_15', 'min_10_15', 
+          'mean_15_20', 'max_15_20','min_15_20','mean_20','max_20','min_20']
+class_names = ['class']
 
 
 X = df2[feature_names]
@@ -90,12 +111,12 @@ class Debug(BaseEstimator, TransformerMixin):
         return X
 
 pipeline = Pipeline([
-                ("scaler", KNeighborsClassifier()),   
+                ("PCA", PCA(n_components=8)),
+                ("model", KNeighborsClassifier()),   
                 #("debug", Debug()),     
             ])
 
 number_of_splits = 5
-
 
 metrics = [("Accuracy", accuracy_score, [])]
 
@@ -109,4 +130,5 @@ for train, test in TimeSeriesSplit(number_of_splits).split(X,y):
         score = func(truth, predictions)
         scores.append(score)
 
+#print(pipeline['PCA'].components_)
 print(scores)

@@ -32,7 +32,7 @@ with file:
     writer = csv.writer(file)
     writer.writerow(header)
 
-dir = 'data/wav/'
+dir = 'wav/'
 for c in class_list:
     for filename in os.listdir(dir):
         if filename.endswith(".txt"):
