@@ -6,6 +6,8 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+from scipy import fftpack
+import librosa
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -61,26 +63,42 @@ def above18(df1):
 def qmean(num):
     return sqrt(sum(n*n for n in num)/len(num))
 
+def spectral_centroid(y, sr):
+    sp = librosa.feature.spectral_centroid(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
+    sp_length = len(sp) 
+    sp_mean = np.mean(sp)
+    sp_median = np.median(sp)
+
+    sb = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
+    sb_length = len(sb) 
+    sb_mean = np.mean(sb)
+    sb_median = np.median(sb)
+
+    features = [sp_length,sp_mean,sp_median,sb_length,sb_mean,sb_median]
+
+    data.append(features)
+
 for filename in os.listdir(dir):
     cl = classdict[filename[4:5]]
     if cl == 2:
         continue
     else:
         filename_path = os.path.join(dir, filename)
-        df1 = pd.read_csv(filename_path, delimiter = "\t")
-        data = above18(df1)
+        #data = above18(df1)
         classes.append(cl)
-        
-columns_= ['mean_5', 'max_5', 'min_5', 'mean_5_10', 'max_5_10', 
-          'min_5_10', 'mean_10_15', 'max_10_15', 'min_10_15', 
-          'mean_15_20', 'max_15_20','min_15_20','mean_20','max_20','min_20']
 
+        y, sr = librosa.load(filename_path)
+        spectral_centroid(y, sr)
+
+columns_= ['sp_length','sp_mean','sp_median','sb_length','sb_mean','sb_median']
 df2 = pd.DataFrame(data,columns=columns_)
 df2['class'] = classes # Adding column with class label
-print(df2['class'].value_counts()) # Print the distribution of the data
-print(df2['class'].value_counts()/len(df2['class']))   
-plt.hist(df2['mean_5'], bins=20)
-plt.show()
+
+ 
+# print(df2['class'].value_counts()) # Print the distribution of the data
+# print(df2['class'].value_counts()/len(df2['class']))   
+# plt.hist(df2['mean_5'], bins=20)
+# plt.show()
 
 #####################################################################################3
 # Import some of the sklearn modules you are likely to use.
@@ -97,9 +115,7 @@ from sklearn.model_selection import StratifiedKFold
 
 
 ##
-feature_names = ['mean_5', 'max_5', 'min_5', 'mean_5_10', 'max_5_10', 
-          'min_5_10', 'mean_10_15', 'max_10_15', 'min_10_15', 
-          'mean_15_20', 'max_15_20','min_15_20','mean_20','max_20','min_20']
+feature_names = ['sp_length','sp_mean','sp_median','sb_length','sb_mean','sb_median']
 class_names = ['class']
 
 
@@ -113,7 +129,7 @@ class Debug(BaseEstimator, TransformerMixin):
         return X
 
 pipeline = Pipeline([
-                ("PCA", PCA(n_components=8)),
+                #("PCA", PCA(n_components=8)),
                 ("model", KNeighborsClassifier()),   
                 #("debug", Debug()),     
             ])
