@@ -68,6 +68,8 @@ for filename in os.listdir(dir):
     else:
         filename_path = os.path.join(dir, filename)
         df1 = pd.read_csv(filename_path, delimiter = "\t")
+        print(df1)
+        exit()
         data = above18(df1)
         classes.append(cl)
         

@@ -1,0 +1,23 @@
+artifact_path: model
+flavors:
+  python_function:
+    env: conda.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    python_version: 3.8.5
+  sklearn:
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 0.24.1
+run_id: 87292c9ea5524d78872d3a7c2a90e385
+signature:
+  inputs: '[{"name": "mean_5", "type": "double"}, {"name": "max_5", "type": "double"},
+    {"name": "min_5", "type": "double"}, {"name": "mean_5_10", "type": "double"},
+    {"name": "max_5_10", "type": "double"}, {"name": "min_5_10", "type": "double"},
+    {"name": "mean_10_15", "type": "double"}, {"name": "max_10_15", "type": "double"},
+    {"name": "min_10_15", "type": "double"}, {"name": "mean_15_20", "type": "double"},
+    {"name": "max_15_20", "type": "double"}, {"name": "min_15_20", "type": "double"},
+    {"name": "mean_20", "type": "double"}, {"name": "max_20", "type": "double"}, {"name":
+    "min_20", "type": "double"}]'
+  outputs: '[{"type": "integer"}]'
+utc_time_created: '2021-04-25 13:04:25.174872'
