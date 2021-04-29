@@ -29,6 +29,7 @@ d2 = pd.read_csv('../fft_data/4_4_d.txt', delimiter="\t")
 d3 = pd.read_csv('../fft_data/1_5_d.txt', delimiter="\t")
 d4 = pd.read_csv('../fft_data/4_5_d.txt', delimiter="\t")
 d5 = pd.read_csv('../fft_data/1_6_d.txt', delimiter="\t")
+
 d6 = pd.read_csv('../fft_data/4_6_d.txt', delimiter="\t")
 d7 = pd.read_csv('../fft_data/1_4_e.txt', delimiter="\t")
 d8 = pd.read_csv('../fft_data/4_4_e.txt', delimiter="\t")
@@ -61,42 +62,24 @@ y9 = n9[y]
 y10 = n10[y]
 y100 = n11[y]
 y101 = n12[y]
-# y11 = d1[y]
-# y12 = d2[y]
-# y13 = d3[y]
-# y14 = d4[y]
-# y15 = d5[y]
-# y16 = d6[y]
-# yd7 = d7[y]
-# yd8 = d8[y]
-# yd9 = d9[y]
-# yd10 = d10[y]
-# yd11 = d11[y]
-# yd12 = d12[y]
+y11 = d1[y]
+y12 = d2[y]
+y13 = d3[y]
+y14 = d4[y]
+y15 = d5[y]
+y16 = d6[y]
+yd7 = d7[y]
+yd8 = d8[y]
+yd9 = d9[y]
+yd10 = d10[y]
+yd11 = d11[y]
+yd12 = d12[y]
 y17 = m1[y]
 y18 = m2[y]
 y19 = m3[y]
 y20 = m4[y]
 y21 = m5[y]
 y22 = m6[y]
-
-
-
-# Decay wood 4-6
-# d1.plot(x, y, ax=axes, color=decay, label="")
-# d2.plot(x, y, ax=axes, color=decay, label="")
-# d3.plot(x, y, ax=axes, color=decay, label="")
-# d4.plot(x, y, ax=axes, color=decay, label="")
-# d5.plot(x, y, ax=axes, color=decay, label="")
-# d6.plot(x, y, ax=axes, color=decay, label="")
-# d7.plot(x, y, ax=axes, color=decay, label="")
-# d8.plot(x, y, ax=axes, color=decay, label="")
-# d9.plot(x, y, ax=axes, color=decay, label="")
-# d10.plot(x, y, ax=axes, color=decay, label="")
-# d11.plot(x, y, ax=axes, color=decay, label="")
-# d12.plot(x, y, ax=axes, color=decay, label="")
-
-
 
 # Normal - wood 1-6
 n1.plot(x, y, ax=axes, color=normal, label="normal 1")
@@ -112,6 +95,28 @@ n10.plot(x, y, ax=axes, color=normal, label="light moisture 2")
 n11.plot(x, y, ax=axes, color=normal, label="light moisture 1")
 n12.plot(x, y, ax=axes, color=normal, label="light moisture 2")
 
+# Decay wood 4-6
+d1.plot(x, y, ax=axes, color=decay, label="")
+d2.plot(x, y, ax=axes, color=decay, label="")
+d3.plot(x, y, ax=axes, color=decay, label="")
+d4.plot(x, y, ax=axes, color=decay, label="")
+d5.plot(x, y, ax=axes, color=decay, label="")
+d6.plot(x, y, ax=axes, color=decay, label="")
+# d7.plot(x, y, ax=axes, color=decay, label="")
+# d8.plot(x, y, ax=axes, color=decay, label="")
+# d9.plot(x, y, ax=axes, color=decay, label="")
+# d10.plot(x, y, ax=axes, color=decay, label="")
+# d11.plot(x, y, ax=axes, color=decay, label="")
+# d12.plot(x, y, ax=axes, color=decay, label="")
+
+
+d7.plot(x, y, ax=axes, color=extremeDecay, label="")
+d8.plot(x, y, ax=axes, color=extremeDecay, label="")
+d9.plot(x, y, ax=axes, color=extremeDecay, label="")
+d10.plot(x, y, ax=axes, color=extremeDecay, label="")
+d11.plot(x, y, ax=axes, color=extremeDecay, label="")
+d12.plot(x, y, ax=axes, color=extremeDecay, label="")
+
 #Moitsture wood 7-9
 m1.plot(x, y, ax=axes, color=moisture)
 m2.plot(x, y, ax=axes, color=moisture)
@@ -121,7 +126,7 @@ m5.plot(x, y, ax=axes, color=moisture)
 m6.plot(x, y, ax=axes, color=moisture)
 
 axes.set_title(
-    "Green = Normal, Blue = moisture"
+    "Overview of four categories"
 )
 axes.set_xlabel(x)
 axes.set_ylabel(y)
@@ -133,29 +138,15 @@ axes.fill_between(x1, y5, y6, color=normal, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y7, y8, color=normal, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y9, y10, color=normal, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y100, y101, color=normal, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, y11, y12, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, y13, y14, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, y15, y16, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, y15, y16, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, yd7, yd8, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, yd9, yd10, color=decay, interpolate=False, alpha=0.7)
-# axes.fill_between(x1, yd11, yd12, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, y11, y12, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, y13, y14, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, y15, y16, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, y15, y16, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, yd7, yd8, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, yd9, yd10, color=decay, interpolate=False, alpha=0.7)
+axes.fill_between(x1, yd11, yd12, color=decay, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y17, y18, color=moisture, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y19, y20, color=moisture, interpolate=False, alpha=0.7)
 axes.fill_between(x1, y21, y22, color=moisture, interpolate=False, alpha=0.7)
 
-#axes.set_xlim(10000)
-#axes.set_ylim(-20,20)
-
-#plt.savefig('plot_corridor.pdf', format = 'pdf', dpi=400)
 plt.show()
-
-
-# tmpfile = BytesIO()
-# plt.savefig(tmpfile, format='png')
-# encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-
-# html = 'Plot' + '<img src=\'fft_data:image/png;base64,{}\'>'.format(encoded) + 'corridor'
-
-# with open('test.html','w') as f:
-#     f.write(html)
