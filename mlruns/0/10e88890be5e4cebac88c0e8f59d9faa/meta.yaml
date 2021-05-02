@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/mgerh/Pythonfiles/acouwood_ML/mlruns/0/10e88890be5e4cebac88c0e8f59d9faa/artifacts
+end_time: 1619952888343
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 10e88890be5e4cebac88c0e8f59d9faa
+run_uuid: 10e88890be5e4cebac88c0e8f59d9faa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1619952888246
+status: 3
+tags: []
+user_id: mgerh
