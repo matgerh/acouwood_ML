@@ -22,24 +22,33 @@ classes = []
 
 #with mlflow.start_run(run_name="KNN w. Standardscaler"): 
 
-def mean_features(df1):
+def mean_features(df1, data):
     m_features = [] # Array to store features
-    df_freq = df1['Frequency (Hz)']
-    df_amp = df1['Level (dB)']
-    RMS_overall = compute_RMS(df_amp) # Compute RMS for whole spectrum
-    m_features.append(RMS_overall) # Store mean in features array
 
-    df_amp_r1 = df_amp[df_freq <= 4410] # Ampltitude data only below 4410 Hz
-    df_amp_r2 = df_amp[(4410 < df_freq) & (df_freq <= 8820)] 
-    df_amp_r3 = df_amp[(8820 < df_freq) & (df_freq <= 13230)]
-    df_amp_r4 = df_amp[(13230 < df_freq) & (df_freq <= 17640)]
-    df_amp_r5 = df_amp[(17640 < df_freq)]
+    # Store column for easier access
+    df_freq = df1['Frequency (Hz)'] 
+    df_level = df1['Level (dB)']  
 
-    df_list = [df_amp_r1,df_amp_r2,df_amp_r3,df_amp_r4,df_amp_r5]
+    RMS_all = compute_RMS(df_level) # RMS for whole spectrum
+    max_all = df_level.max() # Maximum for whole spectrum
+    min_all = df_level.min() # Minimum for whole spectrum
+    m_features.extend([RMS_all,max_all,min_all]) # Store features in array
+
+    # Seperate data based on 5 intervals and store in dataframes
+    df_level_r1 = df_level[df_freq <= 4410] # Below or equal to 4410 Hz
+    df_level_r2 = df_level[(4410 < df_freq) & (df_freq <= 8820)] # Above 4410 Hz and below or equal to 8820 Hz
+    df_level_r3 = df_level[(8820 < df_freq) & (df_freq <= 13230)] # Above 8820 Hz and below or equal to 13230 Hz
+    df_level_r4 = df_level[(13230 < df_freq) & (df_freq <= 17640)] # Above 13230 Hz and below or equal to 17640 Hz
+    df_level_r5 = df_level[(17640 < df_freq)] # Above 17640 Hz
+
+    
+    df_list = [df_level_r1,df_level_r2,df_level_r3,df_level_r4,df_level_r5]
 
     for df in df_list:
         RMS = compute_RMS(df)
-        m_features.append((RMS))
+        MAX = df.max()
+        MIN = df.min()
+        m_features.extend([RMS,MAX,MIN])
 
     return m_features
 
@@ -47,20 +56,6 @@ def compute_RMS(V):
     n = len(V)
     return sqrt(sum(v*v for v in V)/n)
 
-# def spectral(y, sr, m_features):
-#     sp = librosa.feature.spectral_centroid(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
-#     sp_length = len(sp) 
-#     sp_mean = np.mean(sp)
-#     sp_median = np.median(sp)
-
-#     sb = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
-#     sb_length = len(sb) 
-#     sb_mean = np.mean(sb)
-#     sb_median = np.median(sb)
-
-#     s_features = sp_length,sp_mean,sp_median,sb_length,sb_mean,sb_median
-#     m_features.extend(s_features)
-#     features_list.append(m_features)
 
 def FFT(data,sr):
     #Plot the Signal
@@ -88,22 +83,22 @@ for filename in os.listdir(dir):
         filename_path = os.path.join(dir, filename)
         data, sr = librosa.load(filename_path, sr=44100)
         df1 = FFT(data,sr)
-        features_list.append(mean_features(df1))
+        features_list.append(mean_features(df1,data))
         #spectral(data, sr, m_features)
         classes.append(c)
 
-# 'sp_length','sp_mean','sp_median','sb_length','sb_mean','sb_median',
-columns_list = ['mean_all', 'RMS_mean','mean_r1','mean_r2','mean_r3','mean_r4','mean_r5']
+
+columns_list = ['RMS_all', 'MAX_all','MIN_all','RMS_r1', 'MAX_r1,', 'MIN_r1',
+                'RMS_r2','MAX_r2,', 'MIN_r2','RMS_r3','MAX_r3,', 'MIN_r3',
+                'RMS_r4','MAX_r4,', 'MIN_r4','RMS_r5', 'MAX_r5,', 'MIN_r5'] 
 
 df_features = pd.DataFrame(features_list, columns = columns_list) # Create dataframe and store calculated features with feature names 
 df_features['class'] = classes # Add column with class label
 data = df_features # Change name to indicate it is all data
 
-print(data)
-
 # Check the proportion of "n" and "m" observations in the dependent variable target
-# print(df2['class'].value_counts()/len(df2['class']))   
-# plt.hist(df2['mean_5'], bins=20)
+# print(data['class'].value_counts()/len(data['class']))   
+# plt.hist(data['RMS_all'], bins=20)
 # plt.show()
 
 #####################################################################################3
@@ -119,8 +114,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, MinMaxScaler, StandardScaler
 from sklearn.metrics import classification_report
 from numpy import set_printoptions
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import SelectKBest, f_classif
 
 
 # Encode categorical target variable
@@ -134,16 +128,20 @@ class_names = ['class'] # Define name of target variable
 X = data[feature_names]
 y = data[class_names]
 
-# Feature selection
-test = SelectKBest(score_func=f_classif, k='all')
-fit = test.fit(X, y)
-features = fit.transform(X)
-# Print the scores for the features
-for i in range(len(fit.scores_)):
-	print('Feature %d: %f' % (i, fit.scores_[i]))
-# Plot the scores
-# plt.bar([i for i in range(len(fit.scores_))], fit.scores_)
-# plt.show()
+# # Feature selection
+# test = SelectKBest(score_func=f_classif, k='all')
+# fit = test.fit(X, y)
+# features = fit.transform(X)
+# # Print the scores for the features
+# for i in range(len(fit.scores_)):
+# 	print('Feature %d: %f' % (i, fit.scores_[i]))
+
+# # Plot the scores
+# plt.bar(columns_list, fit.scores_, color="#47903A")
+# ax = plt.gca()
+# ax.tick_params(axis='x', labelsize=6)
+# plt.title('Feature scores')
+# #plt.show()
 
 class Debug(BaseEstimator, TransformerMixin):
     def fit(self,X,y): return self
@@ -153,8 +151,9 @@ class Debug(BaseEstimator, TransformerMixin):
 
 pipeline = Pipeline([
                     ("columns", ColumnTransformer([
-                        ("scaler", StandardScaler(), columns_list),
+                        #("scaler", StandardScaler(), columns_list),
                         ], remainder="passthrough")),
+                ('f_classif', SelectKBest(f_classif, k=10)),
                 #("encoder", OneHotEncoder()),
                 #("debug", Debug()),   
                 #("PCA", PCA(n_components=8)),
@@ -163,7 +162,7 @@ pipeline = Pipeline([
 
 number_of_splits = 5
 
-metrics = [("Accuracy", accuracy_score, []), ("Precision", precision_score, []), ("Recall", recall_score, [])]
+metrics = [("Accuracy", accuracy_score, []), ("Precision", precision_score, []), ("Recall", recall_score, []),]
 
 # mlflow.log_param("number_of_splits", number_of_splits)
 # mlflow.log_param("transformers", pipeline["columns"])
@@ -173,6 +172,7 @@ metrics = [("Accuracy", accuracy_score, []), ("Precision", precision_score, []),
 for train, test in StratifiedKFold(number_of_splits).split(X,y):
     pipeline.fit(X.iloc[train], y.iloc[train].values.ravel())
     predictions = pipeline.predict(X.iloc[test])
+    print(predictions)
     truth = y.iloc[test]
                 
     # Calculate and save the metrics for this fold
