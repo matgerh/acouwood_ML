@@ -9,15 +9,17 @@ import numpy as np
 import math
 import statistics
 
-mlflow.set_tracking_uri("http://localhost:5000/")
+
+
+mlflow.set_tracking_uri("Model selection")
 
 
 # ML experiment name
-mlflow.set_experiment("AcouWood")
+mlflow.set_experiment("plot")
 
 pd.set_option('display.max_rows', None)
 
-with mlflow.start_run(run_name="KNN classifier standard scaler"): 
+with mlflow.start_run(run_name="SVM"): 
 
     ##############################################################################
     # Feature extraction
@@ -105,6 +107,32 @@ with mlflow.start_run(run_name="KNN classifier standard scaler"):
     df_data = pd.DataFrame(features_list, columns = columns_list) # Create dataframe and store calculated features with feature names 
     df_data['class'] = classes # Add column with class labels to dataframe
 
+    ##################################################################
+    # Outlier detection 
+    from sklearn.neighbors import LocalOutlierFactor
+
+    # fig, ax = plt.subplots()
+
+    # colors = {0:'red', 1:'green'}
+    # ax.scatter(df_data['MIN_r5'], df_data['RMS_r5'], color=df_data['class'].map(colors))
+    # plt.show()
+
+    # Outlier detection model
+    model = LocalOutlierFactor()
+    y_pred = model.fit_predict(df_data[columns_list])
+
+    outlier_index = np.where(y_pred == -1)  # Filter outlier index
+    outlier_values = df_data.iloc[outlier_index] # Filter outlier values
+
+    # Visualize outliers 
+    # plt.scatter(df_data['MIN_r5'], df_data['RMS_r5'])
+    # plt.scatter(outlier_values['MIN_r5'], outlier_values['RMS_r5'], color='r')
+    # plt.show()
+
+    # drop outlier values 
+    df_data = df_data.drop(outlier_index[0])
+    df_data = df_data.reset_index(drop=True)
+
     ########################################################################
     # Data exploration
 
@@ -128,11 +156,14 @@ with mlflow.start_run(run_name="KNN classifier standard scaler"):
     # plt.hist(data['RMS_all'], bins=20)
     # plt.show()
 
+   
 
     #####################################################################################
     # Import sklearn modules
     from sklearn.pipeline import Pipeline
     from sklearn.neighbors import KNeighborsClassifier
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.svm import SVC
     from sklearn.compose import ColumnTransformer
     from sklearn.base import BaseEstimator, TransformerMixin
     from sklearn.neighbors import KNeighborsRegressor
@@ -161,8 +192,8 @@ with mlflow.start_run(run_name="KNN classifier standard scaler"):
         def transform(self,X): 
             print(X)
             return X
-
-    number_of_features = 'all'
+    
+    number_of_features = 6
 
     # Build pipeline
     pipeline = Pipeline([
@@ -173,7 +204,7 @@ with mlflow.start_run(run_name="KNN classifier standard scaler"):
                     #("encoder", OneHotEncoder()),
                     #("debug", Debug()),   
                     #("PCA", PCA(n_components=8)),
-                    ("model", KNeighborsClassifier()),     
+                    ("model", RandomForestClassifier()),     
                 ])
 
     # Splits in cross validation
