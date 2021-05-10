@@ -26,16 +26,16 @@ with mlflow.start_run(run_name="SVM"):
 
     # Compute features 
     def features(dft):
-        rmm_features = [] # List to store features (RMS, maximum, and minimum)
+        mmm_features = [] # List to store features (RMS, maximum, and minimum)
 
         # Store column for easier access
         df_freq = dft['Frequency (Hz)'] # Frequencies
         df_sp = dft['Level (dB)']  # Sound pressure level
 
-        RMS_all = compute_RMS(df_sp) # RMS for whole spectrum
+        mean_all = df_sp.mean() # Mean for whole spectrum
         max_all = df_sp.max() # Maximum for whole spectrum
         min_all = df_sp.min() # Minimum for whole spectrum
-        rmm_features.extend([RMS_all,max_all,min_all]) # Add list of features to overall list of features 
+        mmm_features.extend([mean_all,max_all,min_all]) # Add list of features to overall list of features 
 
         # Seperate data based on 5 intervals and store in dataframes
         df_sp_r1 = df_sp[df_freq <= 4410] # Below or equal to 4410 Hz
@@ -49,18 +49,13 @@ with mlflow.start_run(run_name="SVM"):
 
         # For each interval
         for df in df_list:
-            RMS = compute_RMS(df) # RMS of interval
-            MAX = df.max() # Maximum of interval
-            MIN = df.min() # Minimum of interval 
-            rmm_features.extend([RMS,MAX,MIN]) # Add list of features to overall list of features 
+            Mean = df.mean(df) # Mean of interval
+            Max = df.max() # Maximum of interval
+            Min = df.min() # Minimum of interval 
+            mmm_features.extend([Mean,Max,Min]) # Add list of features to overall list of features 
 
         # Return a list of computed features 
-        return rmm_features 
-
-    # Calculating RMS of a data structure
-    def compute_RMS(V):
-        n = len(V) # Number of data points 
-        return sqrt(sum(v*v for v in V)/n)  # Square all numbers, find the mean of them, and take the square root of the result
+        return mmm_features 
 
     # Fast fourier transform of data 
     def FFT(data,sr):
@@ -100,9 +95,9 @@ with mlflow.start_run(run_name="SVM"):
             classes.append(c) # Append class to class list 
 
     # Feature names in order of calculation 
-    columns_list = ['RMS_all', 'MAX_all','MIN_all','RMS_r1', 'MAX_r1,', 'MIN_r1',
-                    'RMS_r2','MAX_r2,', 'MIN_r2','RMS_r3','MAX_r3,', 'MIN_r3',
-                    'RMS_r4','MAX_r4,', 'MIN_r4','RMS_r5', 'MAX_r5,', 'MIN_r5'] 
+    columns_list = ['mean_all', 'max_all','min_all','mean_r1', 'max_r1,', 'min_r1',
+                    'mean_r2','max_r2,', 'min_r2','mean_r3','max_r3,', 'min_r3',
+                    'mean_r4','max_r4,', 'min_r4','mean_r5', 'max_r5,', 'min_r5'] 
 
     df_data = pd.DataFrame(features_list, columns = columns_list) # Create dataframe and store calculated features with feature names 
     df_data['class'] = classes # Add column with class labels to dataframe
