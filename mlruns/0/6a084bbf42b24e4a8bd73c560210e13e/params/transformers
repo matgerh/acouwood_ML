@@ -1,0 +1,7 @@
+ColumnTransformer(remainder='passthrough',
+                  transformers=[('scaler', StandardScaler(),
+                                 ['mean_all', 'max_all', 'min_all', 'mean_r1',
+                                  'max_r1,', 'min_r1', 'mean_r2', 'max_r2,',
+                                  'min_r2', 'mean_r3', 'max_r3,', 'min_r3',
+                                  'mean_r4', 'max_r4,', 'min_r4', 'mean_r5',
+                                  'max_r5,', 'min_r5'])])
