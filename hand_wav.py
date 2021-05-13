@@ -24,39 +24,6 @@ with mlflow.start_run(run_name="SVM"):
     ##############################################################################
     # Feature extraction
 
-    # Compute features 
-    def features(dft):
-        mmm_features = [] # List to store features (RMS, maximum, and minimum)
-
-        # Store column for easier access
-        df_freq = dft['Frequency (Hz)'] # Frequencies
-        df_sp = dft['Level (dB)']  # Sound pressure level
-
-        mean_all = df_sp.mean() # Mean for whole spectrum
-        max_all = df_sp.max() # Maximum for whole spectrum
-        min_all = df_sp.min() # Minimum for whole spectrum
-        mmm_features.extend([mean_all,max_all,min_all]) # Add list of features to overall list of features 
-
-        # Seperate data based on 5 intervals and store in dataframes
-        df_sp_r1 = df_sp[df_freq <= 4410] # Below or equal to 4410 Hz
-        df_sp_r2 = df_sp[(4410 < df_freq) & (df_freq <= 8820)] # Above 4410 Hz and below or equal to 8820 Hz
-        df_sp_r3 = df_sp[(8820 < df_freq) & (df_freq <= 13230)] # Above 8820 Hz and below or equal to 13230 Hz
-        df_sp_r4 = df_sp[(13230 < df_freq) & (df_freq <= 17640)] # Above 13230 Hz and below or equal to 17640 Hz
-        df_sp_r5 = df_sp[(17640 < df_freq)] # Above 17640 Hz
-
-        # Store dataframe in list that can be iterated
-        df_list = [df_sp_r1,df_sp_r2,df_sp_r3,df_sp_r4,df_sp_r5] 
-
-        # For each interval
-        for df in df_list:
-            Mean = df.mean(df) # Mean of interval
-            Max = df.max() # Maximum of interval
-            Min = df.min() # Minimum of interval 
-            mmm_features.extend([Mean,Max,Min]) # Add list of features to overall list of features 
-
-        # Return a list of computed features 
-        return mmm_features 
-
     # Fast fourier transform of data 
     def FFT(data,sr):
         N = 2048 # Number of data points used
@@ -73,6 +40,33 @@ with mlflow.start_run(run_name="SVM"):
         # plt.show()
         return dft
 
+    # Compute features 
+    def mean_features(dft):
+        mean_features = [] # List to store features (RMS, maximum, and minimum)
+
+        # Store column for easier access
+        df_freq = dft['Frequency (Hz)'] # Frequencies
+        df_sp = dft['Level (dB)']  # Sound pressure level
+
+        # Seperate data based on 5 intervals and store in dataframes
+        df_sp_r1 = df_sp[df_freq <= 4410] # Below or equal to 4410 Hz
+        df_sp_r2 = df_sp[(4410 < df_freq) & (df_freq <= 8820)] # Above 4410 Hz and below or equal to 8820 Hz
+        df_sp_r3 = df_sp[(8820 < df_freq) & (df_freq <= 13230)] # Above 8820 Hz and below or equal to 13230 Hz
+        df_sp_r4 = df_sp[(13230 < df_freq) & (df_freq <= 17640)] # Above 13230 Hz and below or equal to 17640 Hz
+        df_sp_r5 = df_sp[(17640 < df_freq)] # Above 17640 Hz
+
+        # Store dataframe in list that can be iterated
+        df_list = [df_sp_r1,df_sp_r2,df_sp_r3,df_sp_r4,df_sp_r5] 
+
+        # For each interval
+        for df in df_list:
+            mean = df.mean(df) # Mean of interval
+            mean_features.extend([mean]) # Add list of features to overall list of features 
+
+        # Return a list of computed features 
+        return mean_features 
+
+    
     # Directory of audio files
     dir = 'wav/'
 
