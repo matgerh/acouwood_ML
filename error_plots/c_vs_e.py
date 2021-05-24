@@ -20,19 +20,19 @@ c10 = 'yellowgreen'
 data = []
 
 #Read in files
-n11 = pd.read_csv('../fft_data/1_1_n.txt', delimiter="\t")
-n41 = pd.read_csv('../fft_data/4_1_n.txt', delimiter="\t")
-n12 = pd.read_csv('../fft_data/1_2_n.txt', delimiter="\t")
-n42 = pd.read_csv('../fft_data/4_2_n.txt', delimiter="\t")
-n13 = pd.read_csv('../fft_data/1_3_n.txt', delimiter="\t")
-n43 = pd.read_csv('../fft_data/4_3_n.txt', delimiter="\t")
+c11 = pd.read_csv('../fft_data/1_1_c.txt', delimiter="\t")
+c41 = pd.read_csv('../fft_data/4_1_c.txt', delimiter="\t")
+c12 = pd.read_csv('../fft_data/1_2_c.txt', delimiter="\t")
+c42 = pd.read_csv('../fft_data/4_2_c.txt', delimiter="\t")
+c13 = pd.read_csv('../fft_data/1_3_c.txt', delimiter="\t")
+c43 = pd.read_csv('../fft_data/4_3_c.txt', delimiter="\t")
 
-n14 = pd.read_csv('../fft_data/1_4_n.txt', delimiter="\t")
-n44 = pd.read_csv('../fft_data/4_4_n.txt', delimiter="\t")
-n15 = pd.read_csv('../fft_data/1_5_n.txt', delimiter="\t")
-n45 = pd.read_csv('../fft_data/4_5_n.txt', delimiter="\t")
-n16 = pd.read_csv('../fft_data/1_6_n.txt', delimiter="\t")
-n46 = pd.read_csv('../fft_data/4_6_n.txt', delimiter="\t")
+c14 = pd.read_csv('../fft_data/1_4_c.txt', delimiter="\t")
+c44 = pd.read_csv('../fft_data/4_4_c.txt', delimiter="\t")
+c15 = pd.read_csv('../fft_data/1_5_c.txt', delimiter="\t")
+c45 = pd.read_csv('../fft_data/4_5_c.txt', delimiter="\t")
+c16 = pd.read_csv('../fft_data/1_6_c.txt', delimiter="\t")
+c46 = pd.read_csv('../fft_data/4_6_c.txt', delimiter="\t")
 
 d14 = pd.read_csv('../fft_data/1_4_d.txt', delimiter="\t")
 d44 = pd.read_csv('../fft_data/4_4_d.txt', delimiter="\t")
@@ -59,31 +59,31 @@ fig, axes = plt.subplots()
 x = 'Frequency (Hz)'
 y = 'Level (dB)'
 
-a = 'n11 - e14'
-b = 'n41 - e44'
-c = 'n12 - e15'
-d = 'n42 - e45'
-e = 'n13 - e16'
-f = 'n13 - e46'
-g = 'n14 - e14'
-h = 'n44 - e44'
-i = 'n15 - e15'
-j = 'n16 - e45'
+a = 'c11 - e14'
+b = 'c41 - e44'
+c = 'c12 - e15'
+d = 'c42 - e45'
+e = 'c13 - e16'
+f = 'c13 - e46'
+g = 'c14 - e14'
+h = 'c44 - e44'
+i = 'c15 - e15'
+j = 'c16 - e45'
 
 rel = pd.DataFrame(data, columns=[x, a, b, c, d, e, f, g, h, i])
-rel[x] = n11[x]
+rel[x] = c11[x]
 
-rel[a] = n11[y].subtract(e14[y])**2
-rel[b] = n41[y].subtract(e44[y])**2
-rel[c] = n12[y].subtract(e15[y])**2
-rel[d] = n42[y].subtract(e45[y])**2
-rel[e] = n13[y].subtract(e16[y])**2
-rel[f] = n43[y].subtract(e46[y])**2
+rel[a] = c11[y].subtract(e14[y])**2
+rel[b] = c41[y].subtract(e44[y])**2
+rel[c] = c12[y].subtract(e15[y])**2
+rel[d] = c42[y].subtract(e45[y])**2
+rel[e] = c13[y].subtract(e16[y])**2
+rel[f] = c43[y].subtract(e46[y])**2
 
-rel[g] = n14[y].subtract(e14[y])**2
-rel[h] = n44[y].subtract(e44[y])**2
-rel[i] = n15[y].subtract(e15[y])**2
-rel[j] = n16[y].subtract(e45[y])**2
+rel[g] = c14[y].subtract(e14[y])**2
+rel[h] = c44[y].subtract(e44[y])**2
+rel[i] = c15[y].subtract(e15[y])**2
+rel[j] = c16[y].subtract(e45[y])**2
 
 rel[a] = rel[a].rolling(100, min_periods=1).sum()
 rel[b] = rel[b].rolling(100, min_periods=1).sum()
@@ -118,7 +118,7 @@ axes.fill_between(rel[x], rel[h], color=c8, alpha=0.4)
 axes.fill_between(rel[x], rel[i],  color=c9, alpha=0.4)
 axes.fill_between(rel[x], rel[j], color=c10, alpha=0.4)
 
-axes.set_title("Squared error between neutral and extreme decay samples")
+axes.set_title("Squared error between control and extreme decay samples")
 axes.set_xlabel(x)
 axes.set_ylabel(y)
 axes.set_xlim(20,22000)
@@ -126,7 +126,7 @@ axes.set_xlim(20,22000)
 plt.legend(loc=2, prop={'size': 6})
 #axes.set_xscale('log')
 # axes.get_legend().remove()
-plt.savefig('n_vs_e.png',dpi=300)
+plt.savefig('c_vs_e.png',dpi=300)
 plt.show()
 exit()
 
