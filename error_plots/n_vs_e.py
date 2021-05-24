@@ -6,6 +6,17 @@ import matplotlib.pyplot as plt
 
 pd.set_option('display.max_rows', None)
 
+c1 = 'limegreen'
+c2 = 'steelblue'
+c3 = 'deepskyblue'
+c4 = 'sienna'
+c5 = 'darkgoldenrod'
+c6 = 'darkgreen'
+c7 = 'peru'
+c8 = 'darkkhaki'
+c9 = 'royalblue'
+c10 = 'yellowgreen'
+
 data = []
 
 #Read in files
@@ -85,17 +96,27 @@ rel[h] = rel[h].rolling(100, min_periods=1).sum()
 rel[i] = rel[i].rolling(100, min_periods=1).sum()
 rel[j] = rel[j].rolling(100, min_periods=1).sum()
 
-rel.plot(x, a, ax=axes, color='darkgreen')
-rel.plot(x, b, ax=axes, color='yellow')
-rel.plot(x, c, ax=axes, color='brown')
-rel.plot(x, d, ax=axes, color='blue')
-rel.plot(x, e, ax=axes, color='darkgoldenrod')
-rel.plot(x, f, ax=axes, color='darkblue')
+rel.plot(x, a, ax=axes, color=c1)
+rel.plot(x, b, ax=axes, color=c2)
+rel.plot(x, c, ax=axes, color=c3)
+rel.plot(x, d, ax=axes, color=c4)
+rel.plot(x, e, ax=axes, color=c5)
+rel.plot(x, f, ax=axes, color=c6)
+rel.plot(x, g, ax=axes, color=c7)
+rel.plot(x, h, ax=axes, color=c8)
+rel.plot(x, i, ax=axes, color=c9)
+rel.plot(x, j, ax=axes, color=c10)
 
-rel.plot(x, g, ax=axes, color='green')
-rel.plot(x, h, ax=axes, color='yellow')
-rel.plot(x, i, ax=axes, color='brown')
-rel.plot(x, j, ax=axes, color='blue')
+axes.fill_between(rel[x], rel[a], color=c1, alpha=0.4)
+axes.fill_between(rel[x], rel[b], color=c2, alpha=0.4)
+axes.fill_between(rel[x], rel[c],  color=c3, alpha=0.4)
+axes.fill_between(rel[x], rel[d], color=c4, alpha=0.4)
+axes.fill_between(rel[x], rel[e], color=c5, alpha=0.4)
+axes.fill_between(rel[x], rel[f], color=c6, alpha=0.4)
+axes.fill_between(rel[x], rel[g],  color=c7, alpha=0.4)
+axes.fill_between(rel[x], rel[h], color=c8, alpha=0.4)
+axes.fill_between(rel[x], rel[i],  color=c9, alpha=0.4)
+axes.fill_between(rel[x], rel[j], color=c10, alpha=0.4)
 
 axes.set_title("Squared error between neutral and extreme decay samples")
 axes.set_xlabel(x)
@@ -105,7 +126,7 @@ axes.set_xlim(20,22000)
 plt.legend(loc=2, prop={'size': 6})
 #axes.set_xscale('log')
 # axes.get_legend().remove()
-#plt.savefig('diff_plots/diff_n_d_maxfreq10000.png',dpi=300)
+plt.savefig('n_vs_e.png',dpi=300)
 plt.show()
 exit()
 
