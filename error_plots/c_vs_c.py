@@ -61,17 +61,17 @@ j = 'c48 - c47'
 rel = pd.DataFrame(data, columns=[x, a, b, c, d, e])
 rel[x] = c11[x]
 
-rel[a] = c11[y].subtract(c14[y])**2
-rel[b] = c41[y].subtract(c44[y])**2
-rel[c] = c12[y].subtract(c15[y])**2
-rel[d] = c42[y].subtract(c45[y])**2
-rel[e] = c13[y].subtract(c16[y])**2
-rel[f] = c43[y].subtract(c46[y])**2
+rel[a] = abs(c11[y].subtract(c14[y]))
+rel[b] = abs(c41[y].subtract(c44[y]))
+rel[c] = abs(c12[y].subtract(c15[y]))
+rel[d] = abs(c42[y].subtract(c45[y]))
+rel[e] = abs(c13[y].subtract(c16[y]))
+rel[f] = abs(c43[y].subtract(c46[y]))
 
-rel[g] = c47[y].subtract(c41[y])**2
-rel[h] = c18[y].subtract(c15[y])**2
-rel[i] = c49[y].subtract(c46[y])**2
-rel[j] = c48[y].subtract(c47[y])**2
+rel[g] = abs(c47[y].subtract(c41[y]))
+rel[h] = abs(c18[y].subtract(c15[y]))
+rel[i] = abs(c49[y].subtract(c46[y]))
+rel[j] = abs(c48[y].subtract(c47[y]))
 
 
 rel[a] = rel[a].rolling(100, min_periods=1).sum()
@@ -111,7 +111,7 @@ axes.fill_between(rel[x], rel[j], color=c10, alpha=0.4)
 axes.set_xlabel(x)
 axes.set_ylabel(y)
 axes.set_xlim(20,22000)
-#axes.set_ylim(-20,20)
+axes.set_ylim(0,2200)
 #axes.set_xscale('log')
 # axes.get_legend().remove()
 plt.legend(loc=2, prop={'size': 6})
