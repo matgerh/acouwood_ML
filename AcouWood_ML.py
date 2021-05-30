@@ -6,11 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statistics
 
-
-mlflow.set_tracking_uri("http://localhost:5000/")
-
-
-
+mlflow.set_tracking_uri("http://localhost:5000/") # Traking uri
 mlflow.set_experiment("Feauture_selection") # MLFLow experiment name
 
 with mlflow.start_run(run_name="KNN"): # MLName of run
@@ -21,17 +17,18 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
     # Fast fourier transform of data 
     def FFT(data,sr):
         N = 2048 # Number of data points used
-        sp_values = np.fft.rfft(data, N) # Applying FFT to compute the sound pressure values of discrete Fourier Transform (DFT) 
+        sp_values = np.fft.rfft(data, N) # Applying FFT to compute the sound pressure values in frequency-domain 
         sp_mag = np.abs(sp_values) # Convert to magnitudes (absolute values of signal)
         sp_dB = np.abs(20*np.log10(sp_mag/max(sp_values))) # Convert magnitudes to decibels
         d = 1.0/sr # Sample spacing (inverse of sampling rate)
-        freq = np.fft.rfftfreq(N,d=d) # Return the Discrete Fourier Transform sample frequencies
-        dft = pd.DataFrame(freq,columns=["Frequency (Hz)"]) # Initiate dataframe with frequencies
-        dft['Level (dB)'] = sp_dB # Add decibels to dataframe
+        freq = np.fft.rfftfreq(N,d=d) # Frequencies of FFT
+        df_fft = pd.DataFrame(freq,columns=["Frequency (Hz)"]) # Initiate dataframe with frequencies
+        df_fft['Level (dB)'] = sp_dB # Add sound pressure level in decibels to dataframe
 
-        return dft
+        # Return data frame with frequency-domain data
+        return df_fft
 
-    # Compute features 
+    # Compute features in frequency intervals
     def interval_features(dft):
         interval_features = [] # List to store mean features 
 
@@ -59,14 +56,16 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
         # Return a list of computed features 
         return interval_features 
 
+    # Compute mean spectral features 
     def spectral_features(y, sr):
         sp = librosa.feature.spectral_centroid(y=y, sr=sr)[0] # Compute spectral controids and store in array
         sp_mean = np.mean(sp) # Mean of spectral centroids
         sb = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0] # Compute spectral bandwidths and store in array
         sb_mean = np.mean(sb) # Mean of spectral bandwidth
-
         spectral_features = [sp_mean, sb_mean] # Store in list
-        return spectral_features
+
+        # Return a list of computed features
+        return spectral_features 
         
     dir = 'wav/' # Directory of audio files
     features_list = [] # List to store features         
@@ -82,11 +81,11 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
             data, sr = librosa.load(filename_path, sr=44100) # Read in audio file with sample rate 44,100 Hz
             df_fft = FFT(data,sr) # Convert from frequency-domain to time-domain 
 
-            i_features = interval_features(df_fft)
-            s_features = spectral_features(data, sr)
-            i_features.extend(s_features) # Compute features and add to features list
+            i_features = interval_features(df_fft) # Compute interval features 
+            s_features = spectral_features(data, sr) # Compute spectal features
+            i_features.extend(s_features) # Combine features intro one list
 
-            features_list.append(i_features) 
+            features_list.append(i_features) # Add to overall features list
             classes.append(c) # Append class to class list 
 
     # Feature names in order of calculation 
@@ -96,7 +95,6 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
 
     df_data = pd.DataFrame(features_list, columns = columns_list) # Create dataframe and store calculated features with feature names 
     df_data['class'] = classes # Add column with class labels to dataframe
-
 
     #####################################################################################
     # Analytics 
@@ -123,7 +121,7 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
     X = df_data[feature_names]
     y = df_data[class_names]
 
-    #Outlier detection model
+    # Outlier detection model
     model = LocalOutlierFactor(n_neighbors=10)
     y_pred = model.fit_predict(df_data[columns_list])
 
@@ -172,10 +170,7 @@ with mlflow.start_run(run_name="KNN"): # MLName of run
                     
         # Calculate and save the metrics for this fold
         for name, func, scores in metrics:
-            if (name == "Accuracy"):
-                score = func(truth, predictions) # Score between true values and predictions of y
-            else: 
-                score = func(truth, predictions)#, pos_label=0)
+            score = func(truth, predictions) # Score between true values and predictions of y
             scores.append(score) # Add score to list
 
     # Log summary of the metrics
