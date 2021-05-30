@@ -10,13 +10,13 @@ import math
 import statistics
 
 
-for number_of_features in range(1,17):
+for number_of_features in range(1,12):
 
     mlflow.set_tracking_uri("http://localhost:5000/")
 
 
     # ML experiment name
-    mlflow.set_experiment("Feature selection")
+    mlflow.set_experiment("ex 1")
 
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_colwidth', None)
@@ -37,14 +37,14 @@ for number_of_features in range(1,17):
             dft = pd.DataFrame(freq,columns=["Frequency (Hz)"]) # Initiate dataframe with frequencies
             dft['Level (dB)'] = sp_dB # Add decibels to dataframe
 
-            # print(len(sp_values))
+            # print(len(data))
             # plt.plot(freq, sp_dB)
             # plt.show()
             return dft
 
         # Compute features 
-        def mean_features(dft):
-            mean_features = [] # List to store mean features 
+        def interval_features(dft):
+            interval_features = [] # List to store mean features 
 
             # Store column for easier access
             df_freq = dft['Frequency (Hz)'] # Frequencies
@@ -63,21 +63,21 @@ for number_of_features in range(1,17):
             # For each interval
             for df in df_list:
                 Mean = df.mean() # Mean of interval
-                Max = df.max()
-                Min = df.min()
-                mean_features.extend([Mean,Max,Min]) # Add list of features to overall list of features 
+                Max = df.max() # Maximum of interval
+                Min = df.min() # Minimum of interval
+                interval_features.extend([Mean,Max,Min]) # Add list of features to list of features 
 
             # Return a list of computed features 
-            return mean_features 
+            return interval_features 
 
         def spectral_features(y, sr):
-            sp = librosa.feature.spectral_centroid(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
-            sp_mean = np.mean(sp)
+            sp = librosa.feature.spectral_centroid(y=y, sr=sr)[0] # Compute all spectral centroids and store in array
+            sp_mean = np.mean(sp) # Mean of spectral centroids
 
-            sb = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0] # Compute all centroid frequencies and store in array
-            sb_mean = np.mean(sb)
+            sb = librosa.feature.spectral_bandwidth(y=y, sr=sr)[0] # Compute all spectral bandwidths and store in array
+            sb_mean = np.mean(sb) # Mean of spectral bandwidth
 
-            spectral_features = [sp_mean, sb_mean]
+            spectral_features = [sp_mean, sb_mean] # Store in list
             return spectral_features
             
         dir = 'wav/' # Directory of audio files
@@ -94,9 +94,9 @@ for number_of_features in range(1,17):
                 data, sr = librosa.load(filename_path, sr=44100) # Read in audio file with sample rate 44,100 Hz
                 df_fft = FFT(data,sr) # Convert from frequency-domain to time-domain 
 
-                m_features = mean_features(df_fft)
-                s_features = spectral_features(data, sr)
-                m_features.extend(s_features) # Compute features and add to features list
+                m_features = interval_features(df_fft) # Compute features for each interval
+                s_features = spectral_features(data, sr) # Compute overall spectral features
+                m_features.extend(s_features) # Add to features list
 
                 features_list.append(m_features) 
                 classes.append(c) # Append class to class list 
@@ -109,45 +109,41 @@ for number_of_features in range(1,17):
         df_data = pd.DataFrame(features_list, columns = columns_list) # Create dataframe and store calculated features with feature names 
         df_data['class'] = classes # Add column with class labels to dataframe
 
+        # print(df_data)
+        # exit()
+
         ##################################################################
         # Outlier detection 
-        from sklearn.neighbors import LocalOutlierFactor
+        # from sklearn.neighbors import LocalOutlierFactor
 
-        # # # Seperation on features
-        # # fig, ax = plt.subplots()
-        # # colors = {'n':'darkblue', 'm':'darkgoldenrod'}
-        # # ax.scatter(df_data['sb_mean'], df_data['sp_mean'], color=df_data['class'].map(colors))
-        # # plt.show()
+        # Seperation on features
+        # fig, ax = plt.subplots()
+        # colors = {'c':'darkblue', 'm':'darkgoldenrod'}
+        # ax.scatter(df_data['sb_mean'], df_data['sp_mean'], color=df_data['class'].map(colors))
+        # plt.show()
 
-        #Outlier detection model
-        model = LocalOutlierFactor(n_neighbors=10)
-        y_pred = model.fit_predict(df_data[columns_list])
+        # exit()
 
-        outlier_index = np.where(y_pred == -1)  # Filter outlier index
-        outlier_values = df_data.iloc[outlier_index] # Filter outlier values
+        # #Outlier detection model
+        # model = LocalOutlierFactor(n_neighbors=10)
+        # y_pred = model.fit_predict(df_data[columns_list])
+
+        # outlier_index = np.where(y_pred == -1)  # Filter outlier index
+        # outlier_values = df_data.iloc[outlier_index] # Filter outlier values
 
         # Visualize outliers 
-        # plt.scatter(df_data['sp_mean'], df_data['sb_mean'], color='darkblue')
-        # plt.scatter(outlier_values['sp_mean'], outlier_values['sb_mean'], color='darkred')
-        # plt.title("Outlier detection")
-        # plt.xlabel("sp_mean")
-        # plt.ylabel("sb_mean")
-        # plt.savefig('plots/outliers.png',dpi=300)
+        # # plt.scatter(df_data['sp_mean'], df_data['sb_mean'], color='darkblue')
+        # # plt.scatter(outlier_values['sp_mean'], outlier_values['sb_mean'], color='darkred')
+        # # plt.title("Outlier detection")
+        # # plt.xlabel("sp_mean")
+        # # plt.ylabel("sb_mean")
+        # # plt.savefig('plots/outliers.png',dpi=300)
 
-        df_data = df_data.drop(outlier_index[0]) # Drop outlier values 
-        df_data = df_data.reset_index(drop=True) # Reset index 
+        # df_data = df_data.drop(outlier_index[0]) # Drop outlier values 
+        # df_data = df_data.reset_index(drop=True) # Reset index 
 
-        ########################################################################
+        # ########################################################################
         # #Data exploration
-        # from sklearn.feature_selection import SelectKBest, f_classif
-
-        # # Feature exploration 
-        # test = SelectKBest(score_func=f_classif, k='all')
-        # fit = test.fit(X, y)
-        # features = fit.transform(X)
-        # # Print the scores for the features
-        # for i in range(len(fit.scores_)):
-        # 	print('Feature %d: %f' % (i, fit.scores_[i]))
 
         # # Plot the scores
         # plt.bar(columns_list, fit.scores_, color="#47903A")
@@ -156,16 +152,16 @@ for number_of_features in range(1,17):
         # plt.title('Feature scores')
         # #plt.show()
 
-        # # Distribution - Check the proportion of "n" and "m" observations in the target variable 
-        # print(data['class'].value_counts()/len(data['class']))   
-        # plt.hist(data['RMS_all'], bins=20)
+        # Distribution - Check the proportion of "c" and "m" observations in the target variable 
+        # print(df_data['class'].value_counts()/len(df_data['class']))   
+        # plt.hist(df_data['mean_r1'], bins=30)
         # plt.show()
         # exit()
 
-        # # Distribution
-        # plt.hist(df_data['sp_mean'][df_data['class'] == 'n'], bins=20, color='steelblue', edgecolor='black', linewidth=0.7)
-        # plt.gca().set(title='Distribution of class "neutral"', xlabel = 'Spectral centroid mean', ylabel='Frequency')
-        # plt.show()
+        # # # Distribution
+        # # plt.hist(df_data['sp_mean'][df_data['class'] == 'n'], bins=20, color='steelblue', edgecolor='black', linewidth=0.7)
+        # # plt.gca().set(title='Distribution of class "neutral"', xlabel = 'Spectral centroid mean', ylabel='Frequency')
+        # # plt.show()
 
         #####################################################################################
         # Import sklearn modules
@@ -191,7 +187,7 @@ for number_of_features in range(1,17):
         X = df_data[feature_names]
         y = df_data[class_names]
 
-        # # Feature exploration 
+        # Feature exploration 
         # test = SelectKBest(score_func=mutual_info_classif, k='all')
         # fit = test.fit(X, y)
         # features = fit.transform(X)
@@ -203,9 +199,13 @@ for number_of_features in range(1,17):
         # plt.bar(columns_list, fit.scores_, color="darkblue")
         # ax = plt.gca()
         # ax.tick_params(axis='x', labelsize=4)
-        # plt.title('Feature scores')
+        # #plt.title('Feature scores')
+        # plt.show()
+        # plt.savefig('plots/feature_scores_mutual.png',dpi=300)
+
+        # exit()
         
-        # plt.savefig('plots/feature_scores.png',dpi=300)
+        # 
     
         # # Distribution - Check the proportion of "n" and "m" observations in the target variable 
         # print(data['class'].value_counts()/len(data['class']))   
@@ -226,9 +226,9 @@ for number_of_features in range(1,17):
                             ("columns", ColumnTransformer([
                                 ("scaler", MinMaxScaler(), columns_list),
                                 ], remainder="passthrough")),
-                        ('f_classif', SelectKBest(f_classif, k=number_of_features)),
+                        ('f_classif', SelectKBest(mutual_info_classif, k=number_of_features)),
                         #("debug", Debug()),   
-                        ("model", KNeighborsClassifier()),     
+                        ("model", LogisticRegression()),     
                     ])
 
         # Splits in cross validation
